@@ -1,0 +1,48 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+yarn.lock
+pnpm-lock.yaml
+.pnp
+.pnp.js
+bun.lockb
+bun.lock
+
+# testing
+coverage
+
+# production
+build
+chrome-extension
+chrome-extension.pem
+chrome-extension.crx
+bruno.zip
+*.zip
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# next.js
+/renderer
+/renderer/.next/
+/renderer/out/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+#dev editor
+bruno.iml
+.idea
