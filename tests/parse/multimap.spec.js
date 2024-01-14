@@ -6,7 +6,6 @@ describe('bru parse()', () => {
 name: 'Bruno'
 name: 'Anoop'
 `
-
     const expected = {
       type: 'multimap',
       value: [
