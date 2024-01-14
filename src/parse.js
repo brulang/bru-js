@@ -40,6 +40,30 @@ const parse = (bruText) => {
       return parseArray(ast, lines);
     }
 
+    // if the line ends with a {, it's a new Multimap
+    if (currentLine.endsWith('{')) {
+      const value = parseMultimap({
+        type: 'multimap',
+        value: []
+      }, lines);
+
+      ast.value.push(value);
+
+      return parseArray(ast, lines);
+    }
+
+    // if the line ends with a [, it's a new Array
+    if (currentLine.endsWith('[')) {
+      const value = parseArray({
+        type: 'array',
+        value: []
+      }, lines);
+
+      ast.value.push(value);
+
+      return parseArray(ast, lines);
+    }
+
     // if the line starts with a ], it's the end of the current Array
     if (currentLine.startsWith(']')) {
       return ast;
