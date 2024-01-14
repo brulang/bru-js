@@ -138,5 +138,4 @@ created: '2018-01-01'
     const actual = parse(input);
     expect(actual).toEqual(expected);
   });
-
 });
