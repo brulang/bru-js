@@ -10,13 +10,18 @@ describe('bru parse()', () => {
 
   `;
 
-    const expected = [{
-      key: 'name',
-      value: 'Bruno'
-    }, {
-      key: 'age',
-      value: 28
-    }];
+    const expected = {
+      type: 'multimap',
+      value: [{
+        type: 'pair',
+        key: 'name',
+        value: 'Bruno'
+      }, {
+        type: 'pair',
+        key: 'age',
+        value: 28
+      }]
+    };
 
     const actual = parse(input);
     expect(actual).toEqual(expected);

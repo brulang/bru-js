@@ -18,7 +18,10 @@ const parse = (bruText) => {
   }
 
   const lines = bruText.split('\n');
-  const ast = [];
+  const ast = {
+    type: 'multimap',
+    value: []
+  }
 
   const parseMultimap = (ast, lines) => {
     if(!lines.length) {
@@ -43,11 +46,15 @@ const parse = (bruText) => {
 
     // if the line ends with a {, it's a new Multimap
     if (currentLine.endsWith('{')) {
-      value = parseMultimap([], lines);
+      value = parseMultimap({
+        type: 'multimap',
+        value: []
+      }, lines);
 
-      ast.push({
+      ast.value.push({
+        type: 'pair',
         key,
-        value,
+        value
       });
 
       return parseMultimap(ast, lines);
@@ -60,7 +67,8 @@ const parse = (bruText) => {
 
     value = parseValue(parts[1].trim());
 
-    ast.push({
+    ast.value.push({
+      type: 'pair',
       key,
       value,
     });

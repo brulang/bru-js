@@ -3,10 +3,14 @@ const parse = require('../../src/parse')
 describe('bru parse()', () => {
   it('should parse a simple dictionary with one key and value', () => {
     const input = `name: 'Bruno'`;
-    const expected = [{
-      key: 'name',
-      value: 'Bruno'
-    }];
+    const expected = {
+      type: 'multimap',
+      value: [{
+        type: 'pair',
+        key: 'name',
+        value: 'Bruno'
+      }]
+    }
 
     const actual = parse(input);
     expect(actual).toEqual(expected);
@@ -18,13 +22,18 @@ name: 'Bruno'
 age: 28
 `;
 
-    const expected = [{
-      key: 'name',
-      value: 'Bruno'
-    }, {
-      key: 'age',
-      value: 28
-    }];
+    const expected = {
+      type: 'multimap',
+      value: [{
+        type: 'pair',
+        key: 'name',
+        value: 'Bruno'
+      }, {
+        type: 'pair',
+        key: 'age',
+        value: 28
+      }]
+    };
 
     const actual = parse(input);
     expect(actual).toEqual(expected);
@@ -38,16 +47,25 @@ person: {
 created: '2018-01-01'
 `;
 
-    const expected = [{
-      key: 'person',
+    const expected = {
+      type: 'multimap',
       value: [{
-        key: 'name',
-        value: 'Antony'
+        type: 'pair',
+        key: 'person',
+        value: {
+          type: 'multimap',
+          value: [{
+            type: 'pair',
+            key: 'name',
+            value: 'Antony'
+          }]
+        }
+      }, {
+        type: 'pair',
+        key: 'created',
+        value: '2018-01-01'
       }]
-    }, {
-      key: 'created',
-      value: '2018-01-01'
-    }];
+    };
 
     const actual = parse(input);
     expect(actual).toEqual(expected);
@@ -64,22 +82,36 @@ person: {
 created: '2018-01-01'
 `;
 
-    const expected = [{
-      key: 'person',
+    const expected = {
+      type: 'multimap',
       value: [{
-        key: 'name',
-        value: 'Antony'
+        type: 'pair',
+        key: 'person',
+        value: {
+          type: 'multimap',
+          value: [{
+            type: 'pair',
+            key: 'name',
+            value: 'Antony'
+          }, {
+            type: 'pair',
+            key: 'address',
+            value: {
+              type: 'multimap',
+              value: [{
+                type: 'pair',
+                key: 'city',
+                value: 'London'
+              }]
+            }
+          }]
+        }
       }, {
-        key: 'address',
-        value: [{
-          key: 'city',
-          value: 'London'
-        }]
+        type: 'pair',
+        key: 'created',
+        value: '2018-01-01'
       }]
-    }, {
-      key: 'created',
-      value: '2018-01-01'
-    }];
+    };
 
     const actual = parse(input);
     expect(actual).toEqual(expected);
@@ -103,37 +135,62 @@ person: {
 created: '2018-01-01'
 `;
 
-    const expected = [{
-      key: 'person',
+    const expected = {
+      type: 'multimap',
       value: [{
-        key: 'name',
-        value: 'Antony'
-      }, {
-        key: 'address',
-        value: [{
-          key: 'city',
-          value: 'London'
-        }, {
-          key: 'country',
-          value: 'UK'
-        }]
-      }, {
-        key: 'links',
-        value: [{
-          key: 'twitter',
+        type: 'pair',
+        key: 'person',
+        value: {
+          type: 'multimap',
           value: [{
-            key: 'url',
-            value: 'twitter.com/antony'
+            type: 'pair',
+            key: 'name',
+            value: 'Antony'
           }, {
-            key: 'username',
-            value: '@antony'
+            type: 'pair',
+            key: 'address',
+            value: {
+              type: 'multimap',
+              value: [{
+                type: 'pair',
+                key: 'city',
+                value: 'London'
+              }, {
+                type: 'pair',
+                key: 'country',
+                value: 'UK'
+              }]
+            }
+          }, {
+            type: 'pair',
+            key: 'links',
+            value: {
+              type: 'multimap',
+              value: [{
+                type: 'pair',
+                key: 'twitter',
+                value: {
+                  type: 'multimap',
+                  value: [{
+                    type: 'pair',
+                    key: 'url',
+                    value: 'twitter.com/antony'
+                  }, {
+                    type: 'pair',
+                    key: 'username',
+                    value: '@antony'
+                  }]
+                }
+              }]
+            }
           }]
-        }]
+        }
+      }, {
+        type: 'pair',
+        key: 'created',
+        value: '2018-01-01'
       }]
-    }, {
-      key: 'created',
-      value: '2018-01-01'
-    }];
+    };
 
     const actual = parse(input);
     expect(actual).toEqual(expected);
