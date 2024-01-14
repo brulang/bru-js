@@ -1,4 +1,4 @@
-const parse = (bruText) => {
+const parseBru = (bruText) => {
   if (!bruText || typeof bruText !== 'string') {
     return {};
   }
@@ -7,7 +7,7 @@ const parse = (bruText) => {
     return {};
   }
 
-  function parseValue(valueText) {
+  const parseValue = (valueText) => {
     if (/^-?\d+$/.test(valueText)) {
       return parseInt(valueText, 10);
     } else if (valueText[0] === "'" && valueText.slice(-1) === "'") {
@@ -21,10 +21,10 @@ const parse = (bruText) => {
   const ast = {
     type: 'multimap',
     value: []
-  }
+  };
 
-  const parseArray = (ast, lines) => {
-    if(!lines.length) {
+  const parse = (ast, lines, endChar, currentType) => {
+    if (!lines.length) {
       return ast;
     }
 
@@ -32,122 +32,88 @@ const parse = (bruText) => {
 
     // if the line starts with a #, it's a comment
     if (currentLine.startsWith('#')) {
-      return parseArray(ast, lines);
+      return parse(ast, lines, endChar, currentType);
     }
 
     // ignore empty lines
     if (currentLine === '') {
-      return parseArray(ast, lines);
+      return parse(ast, lines, endChar, currentType);
     }
 
-    // if the line ends with a {, it's a new Multimap
-    if (currentLine.endsWith('{')) {
-      const value = parseMultimap({
-        type: 'multimap',
-        value: []
-      }, lines);
-
-      ast.value.push(value);
-
-      return parseArray(ast, lines);
-    }
-
-    // if the line ends with a [, it's a new Array
-    if (currentLine.endsWith('[')) {
-      const value = parseArray({
-        type: 'array',
-        value: []
-      }, lines);
-
-      ast.value.push(value);
-
-      return parseArray(ast, lines);
-    }
-
-    // if the line starts with a ], it's the end of the current Array
-    if (currentLine.startsWith(']')) {
+    // if the line ends with the specified character, it's the end of the current structure
+    if (currentLine.startsWith(endChar)) {
       return ast;
     }
 
-    const value = parseValue(currentLine);
-
-    ast.value.push(value);
-
-    return parseArray(ast, lines);
-  }
-
-  const parseMultimap = (ast, lines) => {
-    if(!lines.length) {
-      return ast;
-    }
-
-    const currentLine = lines.shift().trim();
-
-    // if the line starts with a #, it's a comment
-    if (currentLine.startsWith('#')) {
-      return parseMultimap(ast, lines);
-    }
-
-    // ignore empty lines
-    if (currentLine === '') {
-      return parseMultimap(ast, lines);
-    }
     const parts = currentLine.split(':', 2);
-
     let key = parts[0].trim();
     let value;
 
     // if the line ends with a {, it's a new Multimap
     if (currentLine.endsWith('{')) {
-      value = parseMultimap({
+      value = parse({
         type: 'multimap',
         value: []
-      }, lines);
+      }, lines, '}', 'multimap');
 
-      ast.value.push({
-        type: 'pair',
-        key,
-        value
-      });
+      if (currentType === 'multimap') {
+        ast.value.push({
+          type: 'pair',
+          key,
+          value
+        });
+      }
 
-      return parseMultimap(ast, lines);
-    }
+      if (currentType === 'array') {
+        ast.value.push(value);
+      }
 
-    // if the line starts with a }, it's the end of the current Multimap
-    if (currentLine.startsWith('}')) {
-      return ast;
+      return parse(ast, lines, endChar, currentType);
     }
 
     // if the line ends with a [, it's a new Array
     if (currentLine.endsWith('[')) {
-      value = parseArray({
+      value = parse({
         type: 'array',
         value: []
-      }, lines);
+      }, lines, ']', 'array');
+
+      if (currentType === 'multimap') {
+        ast.value.push({
+          type: 'pair',
+          key,
+          value
+        });
+      }
+
+      if (currentType === 'array') {
+        ast.value.push(value);
+      }
+
+      return parse(ast, lines, endChar, currentType);
+    }
+
+    if (currentType === 'multimap') {
+      value = parseValue(parts[1].trim());
 
       ast.value.push({
         type: 'pair',
         key,
-        value
+        value,
       });
-
-      return parseMultimap(ast, lines);
     }
 
-    value = parseValue(parts[1].trim());
+    if (currentType === 'array') {
+      value = parseValue(currentLine);
 
-    ast.value.push({
-      type: 'pair',
-      key,
-      value,
-    });
+      ast.value.push(value);
+    }
 
-    return parseMultimap(ast, lines);
-  }
+    return parse(ast, lines, endChar, currentType);
+  };
 
   // The bru file is an implicit Multimap
-  return parseMultimap(ast, lines);
+  return parse(ast, lines, null, 'multimap');
 };
 
-
-module.exports = parse;
+module.exports = parseBru;
