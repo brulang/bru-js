@@ -23,6 +23,35 @@ const parse = (bruText) => {
     value: []
   }
 
+  const parseArray = (ast, lines) => {
+    if(!lines.length) {
+      return ast;
+    }
+
+    const currentLine = lines.shift().trim();
+
+    // if the line starts with a #, it's a comment
+    if (currentLine.startsWith('#')) {
+      return parseArray(ast, lines);
+    }
+
+    // ignore empty lines
+    if (currentLine === '') {
+      return parseArray(ast, lines);
+    }
+
+    // if the line starts with a ], it's the end of the current Array
+    if (currentLine.startsWith(']')) {
+      return ast;
+    }
+
+    const value = parseValue(currentLine);
+
+    ast.value.push(value);
+
+    return parseArray(ast, lines);
+  }
+
   const parseMultimap = (ast, lines) => {
     if(!lines.length) {
       return ast;
@@ -63,6 +92,22 @@ const parse = (bruText) => {
     // if the line starts with a }, it's the end of the current Multimap
     if (currentLine.startsWith('}')) {
       return ast;
+    }
+
+    // if the line ends with a [, it's a new Array
+    if (currentLine.endsWith('[')) {
+      value = parseArray({
+        type: 'array',
+        value: []
+      }, lines);
+
+      ast.value.push({
+        type: 'pair',
+        key,
+        value
+      });
+
+      return parseMultimap(ast, lines);
     }
 
     value = parseValue(parts[1].trim());
