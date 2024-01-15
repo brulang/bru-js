@@ -41,6 +41,23 @@ const parseBru = (bruText) => {
       return ast;
     }
 
+    const isAnnotation = currentLine.startsWith('@');
+    if (isAnnotation) {
+      const parts = currentLine.split('(', 2);
+      const annotationName = parts[0].slice(1);
+      const annotationArgs = parts[1].slice(0, -1).split(',').map(arg => arg.trim());
+
+      if (ast.type === 'multimap') {
+        ast.annotations = ast.annotations || [];
+        ast.annotations.push({
+          name: annotationName,
+          args: annotationArgs
+        });
+      }
+
+      return parse(ast, lines, endChar, ast.type);
+    }
+
     const parts = currentLine.split(':', 2);
     let key = parts[0].trim();
     let value;
@@ -63,11 +80,19 @@ const parseBru = (bruText) => {
       }
 
       if (ast.type === 'multimap') {
-        ast.value.push({
+        let pair = {
           type: 'pair',
           key,
           value
-        });
+        };
+
+        // if the pair has annotations, move them to the pair
+        if (ast.annotations && ast.annotations.length) {
+          pair.annotations = ast.annotations;
+          delete ast.annotations;
+        }
+
+        ast.value.push(pair);
       }
 
       if (ast.type === 'array') {
@@ -83,12 +108,19 @@ const parseBru = (bruText) => {
 
     if (ast.type === 'multimap') {
       value = parseValue(parts[1].trim());
-
-      ast.value.push({
+      let pair = {
         type: 'pair',
         key,
         value,
-      });
+      };
+
+      // if the pair has annotations, move them to the pair
+      if (ast.annotations && ast.annotations.length) {
+        pair.annotations = ast.annotations;
+        delete ast.annotations;
+      }
+
+      ast.value.push(pair);
     }
 
     if (ast.type === 'array') {
