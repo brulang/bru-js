@@ -45,18 +45,21 @@ const parseBru = (bruText) => {
     let key = parts[0].trim();
     let value;
 
-    // if the line ends with { or [ or (, it's a composite data type
-    if ([ '{', '[', '(' ].includes(currentLine.slice(-1))) {
-      if (currentLine.endsWith('{')) {
+    let isMultiMapBegin = currentLine.endsWith('{');
+    let isMultiArrayBegin = currentLine.endsWith('[');
+    let isMultiStringBegin = currentLine.endsWith("'''") && currentLine.length > 3;
+
+    if (isMultiMapBegin || isMultiArrayBegin || isMultiStringBegin) {
+      if (isMultiMapBegin) {
         value = parse({ type: 'multimap', value: [] }, lines, '}');
       }
 
-      if (currentLine.endsWith('[')) {
+      if (isMultiArrayBegin) {
         value = parse({ type: 'array', value: [] }, lines, ']');
       }
 
-      if (currentLine.endsWith('(')) {
-        value = parse({ type: 'multistring', value: [] }, lines, ')');
+      if (isMultiStringBegin) {
+        value = parse({ type: 'multistring', value: [] }, lines, "'''");
       }
 
       if (ast.type === 'multimap') {

@@ -3,7 +3,7 @@ const linter = (input) => {
     switch (openBracket) {
       case '{': return '}';
       case '[': return ']';
-      case '(': return ')';
+      case "'''": return "'''";
       default: return '';
     }
   };
@@ -38,16 +38,38 @@ const linter = (input) => {
     }
 
     // if the line ends with { or [ or (, it's a composite data type
-    if ([ '{', '[', '(' ].includes(currentLine.slice(-1))) {
-      openBrackets.push(currentLine.trim().slice(-1));
+    let isMultiMapBegin = currentLine.trim().endsWith('{');
+    let isMultiArrayBegin = currentLine.trim().endsWith('[');
+    let isMultiStringBegin = currentLine.trim().endsWith("'''") && currentLine.trim().length > 3;
+    if (isMultiMapBegin || isMultiArrayBegin || isMultiStringBegin) {
+      if (isMultiMapBegin) {
+        openBrackets.push('{');
+      } else if (isMultiArrayBegin) {
+        openBrackets.push('[');
+      } else if (isMultiStringBegin) {
+        openBrackets.push("'''");
+      }
 
       return lint(lines, depth + 1, lineNum + 1, openBrackets);
     }
 
-    // if the line starts with } or ] or ), it's the closing bracket
-    if ([ '}', ']', ')' ].includes(currentLine.trim())) {
+    let isMultiMapEnd = currentLine.trim().startsWith('}');
+    let isMultiArrayEnd = currentLine.trim().startsWith(']');
+    let isMultiStringEnd = currentLine.trim().startsWith("'''") && currentLine.trim().length === 3;
+
+    if (isMultiMapEnd || isMultiArrayEnd || isMultiStringEnd) {
       const lastOpenBracket = openBrackets.pop();
-      if (!lastOpenBracket || !isMatchingBracket(lastOpenBracket, currentLine.trim())) {
+      let isMatching;
+
+      if (isMultiMapEnd) {
+        isMatching = isMatchingBracket(lastOpenBracket, '}');
+      } else if (isMultiArrayEnd) {
+        isMatching = isMatchingBracket(lastOpenBracket, ']');
+      } else if (isMultiStringEnd) {
+        isMatching = isMatchingBracket(lastOpenBracket, "'''");
+      }
+
+      if (!isMatching) {
         return {
           type: 'syntax',
           message: `Expected ${getClosingBracket(lastOpenBracket)} but found ${currentLine.trim()}`,

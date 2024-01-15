@@ -67,8 +67,8 @@ person: {
   name: 'Bruno'
   age: 21
   hobbies: [
-    'programming'
-    'gaming'
+    programming
+    gaming
   ]
   links: [
     {
@@ -84,9 +84,9 @@ person: {
     {
       name: 'Bruno'
       url: 'github.com/usebruno/bruno'
-      description: (
+      description: '''
         Opensource API Client!
-      )
+      '''
     }
   ]
 }
