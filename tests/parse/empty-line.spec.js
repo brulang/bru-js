@@ -3,7 +3,7 @@ const parse = require('../../src/parse')
 describe('bru parse()', () => {
   it('should ignore empty lines', () => {
     const input = `
-  name: 'Bruno'
+  name: Bruno
 
   age: 28
 

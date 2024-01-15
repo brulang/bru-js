@@ -3,8 +3,8 @@ const parse = require('../../src/parse')
 describe('bru parse()', () => {
   it('should parse a simple multimap', () => {
     const input = `
-name: 'Bruno'
-name: 'Anoop'
+name: Bruno
+name: Anoop
 `
     const expected = {
       type: 'multimap',
@@ -28,8 +28,8 @@ name: 'Anoop'
 
   it('should parse a simple multimap inside a nested multimap', () => {
     const input = `
-name: 'Bruno'
-name: 'Anoop'
+name: Bruno
+name: Anoop
 address: {
   city: 'New York'
   city: 'San Francisco'

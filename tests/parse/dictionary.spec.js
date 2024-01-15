@@ -2,7 +2,7 @@ const parse = require('../../src/parse')
 
 describe('bru parse()', () => {
   it('should parse a simple dictionary with one key and value', () => {
-    const input = `name: 'Bruno'`;
+    const input = `name: Bruno`;
     const expected = {
       type: 'multimap',
       value: [{
@@ -18,7 +18,7 @@ describe('bru parse()', () => {
 
   it('should parse a simple dictionary with multiple keys and values', () => {
     const input = `
-name: 'Bruno'
+name: Bruno
 age: 28
 `;
 
@@ -42,9 +42,9 @@ age: 28
   it('should parse a dictionary 1 level deep', () => {
     const input = `
 person: {
-  name: 'Antony'
+  name: Antony
 }
-created: '2018-01-01'
+created: 2018-01-01
 `;
 
     const expected = {
@@ -74,12 +74,12 @@ created: '2018-01-01'
   it('should parse a dictionary 2 levels deep', () => {
     const input = `
 person: {
-  name: 'Antony'
+  name: Antony
   address: {
-    city: 'London'
+    city: London
   }
 }
-created: '2018-01-01'
+created: 2018-01-01
 `;
 
     const expected = {
@@ -120,19 +120,19 @@ created: '2018-01-01'
   it('should parse a dictionary 3 levels deep', () => {
     const input = `
 person: {
-  name: 'Antony'
+  name: Antony
   address: {
-    city: 'London'
-    country: 'UK'
+    city: London
+    country: UK
   }
   links: {
     twitter: {
-      url: 'twitter.com/antony'
+      url: twitter.com/antony
       username: '@antony'
     }
   }
 }
-created: '2018-01-01'
+created: 2018-01-01
 `;
 
     const expected = {

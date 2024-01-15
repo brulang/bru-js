@@ -3,7 +3,7 @@ const parse = require('../../src/parse')
 describe('bru parse()', () => {
   it('should ignore comments', () => {
     const input = `
-  name: 'Bruno'
+  name: Bruno
 
   # this is a comment
   age: 28

@@ -4,9 +4,9 @@ describe('bru parse()', () => {
   it('should parse a simple array', () => {
     const input = `
 fruits: [
-  'apple'
-  'banana'
-  'orange'
+  apple
+  banana
+  orange
 ]
 `;
     const expected = {
@@ -33,15 +33,15 @@ fruits: [
     const input = `
 fruits: [
   {
-    name: 'apple'
-    color: 'red'
+    name: apple
+    color: red
   }
   {
-    name: 'banana'
-    color: 'yellow'
+    name: banana
+    color: yellow
   }
   [
-    'orange'
+    orange
   ]
 ]
 `;
