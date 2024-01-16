@@ -113,6 +113,19 @@ const linter = (input) => {
           };
         }
 
+        // ensure key must not contain special characters
+        let keyHasQuotes = isValueQuoted(key);
+        if(!keyHasQuotes) {
+          let validKeyChars = /^[a-zA-Z0-9\-_]+$/;
+          if(!validKeyChars.test(key)) {
+            return {
+              type: 'syntax',
+              message: `Key cannot characters other than a-z, A-Z, 0-9 and - and _`,
+              line: lineNum
+            };
+          }
+        }
+
         let value = parts.join(':').trim();
         let valueNotEmpty = value.length > 0;
         let valueNotMultimapBegin = value.length === 1 && value === '{';

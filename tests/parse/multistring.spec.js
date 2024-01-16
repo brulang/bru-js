@@ -50,7 +50,7 @@ script.pre-request: '''
     expect(actual).toEqual(expected);
   });
 
-  it('should correcttly parse indentation', () => {
+  it('should correctly parse indentation', () => {
     const input = `
 http: {
   method: POST

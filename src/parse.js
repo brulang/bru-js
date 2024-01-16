@@ -9,6 +9,27 @@ const parseBru = (bruText) => {
     return {};
   }
 
+  const parseKey = (keyText) => {
+    if (!keyText || typeof keyText !== 'string') {
+      return '';
+    }
+
+    keyText = keyText.trim();
+
+    if (!keyText.length) {
+      return '';
+    }
+
+    if (
+      keyText[0] === "'" && keyText.slice(-1) === "'" || 
+      keyText[0] === '"' && keyText.slice(-1) === '"'
+    ) {
+      return keyText.slice(1, -1);
+    }
+
+    return keyText;
+  }
+
   const parseValue = (valueText) => {
     if (/^-?\d+$/.test(valueText)) {
       return parseInt(valueText, 10);
@@ -94,7 +115,7 @@ const parseBru = (bruText) => {
       if (ast.type === 'multimap') {
         let pair = {
           type: 'pair',
-          key,
+          key: parseKey(key),
           value
         };
 
@@ -122,7 +143,7 @@ const parseBru = (bruText) => {
       value = parseValue(parts.join(':').trim());
       let pair = {
         type: 'pair',
-        key,
+        key: parseKey(key),
         value,
       };
 
