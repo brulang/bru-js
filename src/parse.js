@@ -12,14 +12,16 @@ const parseBru = (bruText) => {
   const parseValue = (valueText) => {
     if (/^-?\d+$/.test(valueText)) {
       return parseInt(valueText, 10);
-    } else if (valueText[0] === "'" && valueText.slice(-1) === "'") {
+    } else if (
+      (valueText[0] === "'" && valueText.slice(-1) === "'") ||
+      (valueText[0] === '"' && valueText.slice(-1) === '"')
+    ) {
       return valueText.slice(1, -1);
-    } else if (valueText[0] !== "'" && valueText.slice(-1) !== "'") {
-      return valueText;
     } else {
-      throw new Error(`Invalid value: ${valueText}`);
+      return valueText;
     }
-  }
+  };
+  
 
   const parse = (ast, lines, endChar) => {
     if (!lines.length) {

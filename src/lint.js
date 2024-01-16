@@ -12,6 +12,33 @@ const linter = (input) => {
     return getClosingBracket(openBracket) === closeBracket;
   };
 
+  const isValueQuoted = (value) => {
+    if(!value || typeof value !== 'string') {
+      return false;
+    }
+   
+    value = value.trim();
+    if (!value.length) {
+      return false;
+    }
+
+    return value.startsWith("'") && value.endsWith("'") || value.startsWith('"') && value.endsWith('"');
+  };
+
+  const isLineDelimiterEndChar = (line) => {
+    if(!line || typeof line !== 'string') {
+      return false;
+    }
+
+    line = line.trim();
+    if (!line.length) {
+      return false;
+    }
+
+    // delimiters end chars are } ] '''
+    return line.endsWith('}') || line.endsWith(']') || line.endsWith("'''");
+  };
+
   const lint = (lines, parsedLines, depth, lineNum, openBrackets) => {
     if (!lines.length) {
       if (openBrackets.length > 0) {
@@ -57,6 +84,54 @@ const linter = (input) => {
       parsedLines.push(currentLine.slice(expectedIndentation));
 
       return lint(lines, parsedLines, depth, lineNum + 1, openBrackets);
+    }
+
+    // if we are inside a multimap
+    let insideMultimap = openBrackets.length === 0 || (openBrackets.length > 0 && openBrackets[openBrackets.length - 1] === '{');
+    if (insideMultimap) {
+      const parts = currentLine.trim().split(':');
+      const isDelimiterEndChar = isLineDelimiterEndChar(currentLine);
+      const isAnnotation = currentLine.trim().startsWith('@');
+
+      if (!isDelimiterEndChar && !isAnnotation) {
+        // ensure : is present
+        if(parts.length === 1) {
+          return {
+            type: 'syntax',
+            message: `Missing : in multimap`,
+            line: lineNum
+          };
+        }
+
+        let key = parts.shift().trim();
+        // ensure key is not empty
+        if(!key.length) {
+          return {
+            type: 'syntax',
+            message: `Key cannot be empty`,
+            line: lineNum
+          };
+        }
+
+        let value = parts.join(':').trim();
+        let valueNotEmpty = value.length > 0;
+        let valueNotMultimapBegin = value.length === 1 && value === '{';
+        let valueNotArrayBegin = value.length === 1 && value === '[';
+
+        // ensure unqouted values must not contain special characters
+        if(valueNotEmpty && !valueNotMultimapBegin && !valueNotArrayBegin) {
+          let valueHasQuotes = isValueQuoted(value);
+          let specialChars = /[{}[\],]/;
+
+          if(!valueHasQuotes && specialChars.test(value)) {
+            return {
+              type: 'syntax',
+              message: `Unquoted value cannot contain special characters such as { } [ ] ,`,
+              line: lineNum
+            };
+          }
+        }
+      }
     }
 
     // if the line ends with { or [ or (, it's a composite data type
