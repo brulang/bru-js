@@ -1,4 +1,4 @@
-const parse = require('../../src/parse')
+const parse = require('../../../src/parse')
 
 describe('bru parse()', () => {
   it('should parse a simple array', () => {

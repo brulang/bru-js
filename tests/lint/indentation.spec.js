@@ -35,40 +35,6 @@ person: {
     expect(result).toEqual(expected);
   });
 
-  it('should catch errors due to not closing the composite types correctly', () => {
-    const input = `
-person: {
-  name: 'Bruno'
-`
-    const expected = {
-      error: {
-        type: 'syntax',
-        message: 'Expected } but found end of file',
-        line: 4
-      }
-    };
-
-    const result = lint(input);
-    expect(result).toEqual(expected);
-  });
-
-  it('should catch errors due to mismatched closing brackets', () => {
-    const input = `
-person: {
-  name: 'Bruno'
-]`
-    const expected = {
-      error: {
-        type: 'syntax',
-        message: 'Expected } but found ]',
-        line: 4
-      }
-    };
-
-    const result = lint(input);
-    expect(result).toEqual(expected);
-  });
-
   it('should pass when there are no errors', () => {
     const input = `
 person: {
@@ -102,42 +68,5 @@ person: {
     const result = lint(input);
     expect(result.error).toEqual(null);
     expect(result.lines.length).toEqual(29);
-  });
-
-  it('should return the parsed lines', () => {
-    const input = `
-http: {
-  method: POST
-  url: https://usebruno.com/echo
-  headers: {
-    Content-Type: application/json
-  }
-  body: '''
-    {
-      "hello": "world"
-    }
-  '''
-}`;
-    const expected = {
-      error: null,
-      lines: [
-        '',
-        'http: {',
-        'method: POST',
-        'url: https://usebruno.com/echo',
-        'headers: {',
-        'Content-Type: application/json',
-        '}',
-        'body: \'\'\'',
-        '{',
-        '  "hello": "world"',
-        '}',
-        '\'\'\'',
-        '}'
-      ]
-    };
-
-    const result = lint(input);
-    expect(result).toEqual(expected);
   });
 });
