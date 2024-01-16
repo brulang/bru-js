@@ -3,10 +3,15 @@ const parse = require('../../src/parse')
 describe('bru parse()', () => {
   it('should ignore comments', () => {
     const input = `
-  name: Bruno
+name: Bruno
 
-  # this is a comment
-  age: 28
+# this is a comment
+age: 28
+
+address: {
+  # this is another comment
+  city: Berlin
+}
 
   `;
 
@@ -20,6 +25,17 @@ describe('bru parse()', () => {
         type: 'pair',
         key: 'age',
         value: 28
+      }, {
+        type: 'pair',
+        key: 'address',
+        value: {
+          type: 'multimap',
+          value: [{
+            type: 'pair',
+            key: 'city',
+            value: 'Berlin'
+          }]
+        }
       }]
     };
 

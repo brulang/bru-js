@@ -6,13 +6,15 @@ describe('bru lint()', () => {
   name: 'Bruno'
 `
     const expected = {
-      type: 'indentation',
-      message: 'Expected indentation of 0 spaces but found 2',
-      line: 2
+      error: {
+        type: 'indentation',
+        message: 'Expected indentation of 0 spaces but found 2',
+        line: 2
+      }
     };
 
-    const error = lint(input);
-    expect(error).toEqual(expected);
+    const result = lint(input);
+    expect(result).toEqual(expected);
   });
 
 it('should catch indentation errors due to spaces before the key', () => {
@@ -22,13 +24,15 @@ person: {
 }
 `
     const expected = {
-      type: 'indentation',
-      message: 'Expected indentation of 2 spaces but found 3',
-      line: 3
+      error: {
+        type: 'indentation',
+        message: 'Expected indentation of 2 spaces but found 3',
+        line: 3
+      }
     };
 
-    const errors = lint(input);
-    expect(errors).toEqual(expected);
+    const result = lint(input);
+    expect(result).toEqual(expected);
   });
 
   it('should catch errors due to not closing the composite types correctly', () => {
@@ -37,13 +41,15 @@ person: {
   name: 'Bruno'
 `
     const expected = {
-      type: 'syntax',
-      message: 'Expected } but found end of file',
-      line: 4
+      error: {
+        type: 'syntax',
+        message: 'Expected } but found end of file',
+        line: 4
+      }
     };
 
-    const errors = lint(input);
-    expect(errors).toEqual(expected);
+    const result = lint(input);
+    expect(result).toEqual(expected);
   });
 
   it('should catch errors due to mismatched closing brackets', () => {
@@ -52,13 +58,15 @@ person: {
   name: 'Bruno'
 ]`
     const expected = {
-      type: 'syntax',
-      message: 'Expected } but found ]',
-      line: 4
+      error: {
+        type: 'syntax',
+        message: 'Expected } but found ]',
+        line: 4
+      }
     };
 
-    const errors = lint(input);
-    expect(errors).toEqual(expected);
+    const result = lint(input);
+    expect(result).toEqual(expected);
   });
 
   it('should pass when there are no errors', () => {
@@ -91,9 +99,45 @@ person: {
   ]
 }
 `
-    const expected = null;
+    const result = lint(input);
+    expect(result.error).toEqual(null);
+    expect(result.lines.length).toEqual(29);
+  });
 
-    const errors = lint(input);
-    expect(errors).toEqual(expected);
+  it('should return the parsed lines', () => {
+    const input = `
+http: {
+  method: POST
+  url: https://usebruno.com/echo
+  headers: {
+    Content-Type: application/json
+  }
+  body: '''
+    {
+      "hello": "world"
+    }
+  '''
+}`;
+    const expected = {
+      error: null,
+      lines: [
+        '',
+        'http: {',
+        'method: POST',
+        'url: https://usebruno.com/echo',
+        'headers: {',
+        'Content-Type: application/json',
+        '}',
+        'body: \'\'\'',
+        '{',
+        '  "hello": "world"',
+        '}',
+        '\'\'\'',
+        '}'
+      ]
+    };
+
+    const result = lint(input);
+    expect(result).toEqual(expected);
   });
 });

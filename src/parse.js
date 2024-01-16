@@ -1,3 +1,5 @@
+const lint = require('./lint');
+
 const parseBru = (bruText) => {
   if (!bruText || typeof bruText !== 'string') {
     return {};
@@ -24,21 +26,28 @@ const parseBru = (bruText) => {
       return ast;
     }
 
-    const currentLine = lines.shift().trim();
+    const currentLine = lines.shift();
 
     // if the line starts with a #, it's a comment
-    if (currentLine.startsWith('#')) {
+    if (currentLine.trim().startsWith('#')) {
       return parse(ast, lines, endChar, ast.type);
     }
 
     // ignore empty lines
-    if (currentLine === '') {
+    if (currentLine.trim() === '') {
       return parse(ast, lines, endChar, ast.type);
     }
 
     // if the line ends with the specified character, it's the end of the current structure
     if (currentLine.startsWith(endChar)) {
       return ast;
+    }
+
+    // if we are in a multistring, just add the line to the value
+    if (ast.type === 'multistring') {
+      ast.value.push(currentLine);
+
+      return parse(ast, lines, endChar, ast.type);
     }
 
     const isAnnotation = currentLine.startsWith('@');
@@ -58,13 +67,14 @@ const parseBru = (bruText) => {
       return parse(ast, lines, endChar, ast.type);
     }
 
-    const parts = currentLine.split(':', 2);
-    let key = parts[0].trim();
+    // split the currentLine by the first colon
+    const parts = currentLine.split(':');
+    let key = parts.shift().trim();
     let value;
 
-    let isMultiMapBegin = currentLine.endsWith('{');
-    let isMultiArrayBegin = currentLine.endsWith('[');
-    let isMultiStringBegin = currentLine.endsWith("'''") && currentLine.length > 3;
+    let isMultiMapBegin = currentLine.trim().endsWith('{');
+    let isMultiArrayBegin = currentLine.trim().endsWith('[');
+    let isMultiStringBegin = currentLine.trim().endsWith("'''") && currentLine.trim().length > 3;
 
     if (isMultiMapBegin || isMultiArrayBegin || isMultiStringBegin) {
       if (isMultiMapBegin) {
@@ -107,7 +117,7 @@ const parseBru = (bruText) => {
     }
 
     if (ast.type === 'multimap') {
-      value = parseValue(parts[1].trim());
+      value = parseValue(parts.join(':').trim());
       let pair = {
         type: 'pair',
         key,
@@ -124,19 +134,23 @@ const parseBru = (bruText) => {
     }
 
     if (ast.type === 'array') {
-      value = parseValue(currentLine);
+      value = parseValue(currentLine.trim());
 
       ast.value.push(value);
-    }
-
-    if (ast.type === 'multistring') {
-      ast.value.push(currentLine);
     }
 
     return parse(ast, lines, endChar, ast.type);
   };
 
-  const lines = bruText.split('\n');
+  const lintResult = lint(bruText);
+
+  if (lintResult.error) {
+    return {
+      error: lintResult.error
+    };
+  }
+
+  const lines = lintResult.lines;
   const ast = {
     type: 'multimap',
     value: []

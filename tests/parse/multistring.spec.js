@@ -49,4 +49,73 @@ script.pre-request: '''
     const actual = parse(input);
     expect(actual).toEqual(expected);
   });
+
+  it('should correcttly parse indentation', () => {
+    const input = `
+http: {
+  method: POST
+  url: https://usebruno.com/echo
+  headers: {
+    Content-Type: application/json
+  }
+  body: '''
+    {
+      "hello": "world"
+    }
+  '''
+}`;
+    const expected = {
+      type: 'multimap',
+      value: [
+        {
+          type: 'pair',
+          key: 'http',
+          value: {
+            type: 'multimap',
+            value: [
+              {
+                type: 'pair',
+                key: 'method',
+                value: 'POST'
+              },
+              {
+                type: 'pair',
+                key: 'url',
+                value: 'https://usebruno.com/echo'
+              },
+              {
+                type: 'pair',
+                key: 'headers',
+                value: {
+                  type: 'multimap',
+                  value: [
+                    {
+                      type: 'pair',
+                      key: 'Content-Type',
+                      value: 'application/json'
+                    }
+                  ]
+                }
+              },
+              {
+                type: 'pair',
+                key: 'body',
+                value: {
+                  type: 'multistring',
+                  value: [
+                    '{',
+                    '  "hello": "world"',
+                    '}'
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    };
+
+    const actual = parse(input);
+    expect(actual).toEqual(expected);
+  });
 });
