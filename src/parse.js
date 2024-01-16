@@ -31,16 +31,56 @@ const parseBru = (bruText) => {
   }
 
   const parseValue = (valueText) => {
+    valueText = valueText.trim();
+
+    // boolean
+    if (valueText === 'true') {
+      return true;
+    }
+    if (valueText === 'false') {
+      return false;
+    }
+
+    // null
+    if (valueText === 'null') {
+      return null;
+    }
+
+    // integer
     if (/^-?\d+$/.test(valueText)) {
-      return parseInt(valueText, 10);
-    } else if (
+      const intValue = parseInt(valueText, 10);
+      if (Math.abs(intValue) <= Number.MAX_SAFE_INTEGER) {
+        return intValue;
+      }
+    }
+  
+    // floating-point number with optional sign and exponent
+    const floatMatch = /^[+\-]?\d*(\.\d+)?([eE][+\-]?\d+)?$/.exec(valueText);
+    if (floatMatch) {
+      const floatValue = parseFloat(valueText);
+      if (Math.abs(floatValue) <= Number.MAX_SAFE_INTEGER) {
+        return floatValue;
+      }
+    }
+
+    // numbers with optional signs
+    const signedNumberMatch = /^[+\-]?\d+(\.\d+)?$/.exec(valueText);
+    if (signedNumberMatch) {
+      const parsedNumber = parseFloat(valueText);
+      if (Math.abs(parsedNumber) <= Number.MAX_SAFE_INTEGER) {
+        return parsedNumber;
+      }
+    }
+
+    // strings enclosed in single or double quotes
+    if (
       (valueText[0] === "'" && valueText.slice(-1) === "'") ||
       (valueText[0] === '"' && valueText.slice(-1) === '"')
     ) {
       return valueText.slice(1, -1);
-    } else {
-      return valueText;
     }
+
+    return valueText;
   };
   
 
