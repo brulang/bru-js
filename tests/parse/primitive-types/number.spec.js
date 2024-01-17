@@ -331,4 +331,19 @@ describe('bru parse()', () => {
     const actual = parse(input);
     expect(actual).toEqual(expected);
   });
+
+  it('should parse semantic version as string', () => {
+    const input = `version: 1.0.0`;
+    const expected = {
+      type: 'multimap',
+      value: [{
+        type: 'pair',
+        key: 'version',
+        value: '1.0.0'
+      }]
+    }
+
+    const actual = parse(input);
+    expect(actual).toEqual(expected);
+  });
 });
