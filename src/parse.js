@@ -117,7 +117,7 @@ const parseBru = (bruText) => {
     if (isAnnotation) {
       const parts = currentLine.split('(', 2);
       const annotationName = parts[0].slice(1);
-      const annotationArgs = parts[1].slice(0, -1).split(',').map(arg => arg.trim());
+      let annotationArgs = parts[1] && parts[1].length ? parts[1].slice(0, -1).split(',').map(arg => arg.trim()) : []
 
       if (ast.type === 'multimap') {
         ast.annotations = ast.annotations || [];
