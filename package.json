@@ -9,9 +9,11 @@
     "readme.md"
   ],
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "bench": "node ./bench/bench.js"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "tinybench": "^5.0.1"
   }
 }
