@@ -1,0 +1,93 @@
+http: {
+  # Top-level comment
+  nullValue: null
+  trueValue: true
+  falseValue: false
+  intValue: 42
+  negInt: -42
+  floatValue: 3.1415
+  negFloat: -2.71828
+  expValue: 6.022e23
+  negExp: -1.6e-19
+  quotedNum: "200"
+  quotedBool: 'true'
+  quotedNull: "null"
+  quotedString1: "string with, comma"
+  quotedString2: '  leading and trailing  '
+  quotedString3: "{startsWithBrace}"
+  quotedString4: 'contains # hash'
+  quotedString5: "contains:colon"
+  quotedString6: 'contains "double" and \'single\''
+  escapeString: "line\nnew\tindent"
+  unquotedBackslash: \t
+  multistring1: '''
+    This is a multistring.
+    Indentation is preserved.
+    Last line blank for trailing newline.
+
+  '''
+  multistringNested: '''
+    \'\'\'
+      Nested triple quotes as string.
+    \'\'\'
+  '''
+  arrayEmpty: []
+  arraySimple: [
+    1
+    true
+    null
+    "quoted"
+    unquoted
+  ]
+  arrayMixed: [
+    1
+    2
+    "comma style"
+    nested: {
+      nested2: true
+    }
+    [
+      inner
+      array
+    ]
+  ]
+  multimapEmpty: {}
+  multimapSimple: {
+    key1: value1
+    key2: value2
+    key1: duplicate
+    -invalidKey: 'must be quoted'
+  }
+  multimapNested: {
+    inner: {
+      a: 1
+      b: [
+        true
+        false
+      ]
+      c: {
+        deep: null
+      }
+    }
+  }
+  annotationSimple: {
+    @note
+    key: value
+    @flag(true)
+    bool: false
+    @multi(1, "two", null)
+    multi: 3
+  }
+  annotationComplex: {
+    @desc('desc', 42, true)
+    @enum('a', 'b', 'c')
+    status: 'a'
+  }
+  # Legal comment
+  # Another comment
+  whitespaceTest:    "   spaced   "
+  blankValue:
+  # Illegal comment after value (should error):
+  # key: value # not allowed
+  # key: # not allowed
+}
