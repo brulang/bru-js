@@ -1,6 +1,29 @@
 const parse = require('../../src/parse')
 
 describe('bru parse()', () => {
+  it('should parse a annotation with no args', () => {
+    const input = `
+@ignore
+name: Bruno
+`;
+
+    const expected = {
+      type: 'multimap',
+      value: [{
+        type: 'pair',
+        key: 'name',
+        value: 'Bruno',
+        annotations: [{
+          name: 'ignore',
+          args: []
+        }]
+      }]
+    }
+
+    const actual = parse(input);
+    expect(actual).toEqual(expected);
+  })
+
   it('should parse a annotation on a key value pair', () => {
     const input = `
 @description(Name)
