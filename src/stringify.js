@@ -1,6 +1,10 @@
 function astToBru(ast) {
-  function indent(str, depth = 0) {
-    return " ".repeat(2 * depth) + str.trim();
+  function indent(str, depth = 0, trim = true) {
+    let content = str;
+    if (trim) {
+      content = content.trim();
+    }
+    return " ".repeat(2 * depth) + content;
   }
 
   function stringify(node, depth = 0) {
@@ -67,7 +71,9 @@ function astToBru(ast) {
     }
     return (
       `[\n` +
-      node.value.map((childNode) => indent(stringify(childNode, depth + 1), depth)).join("\n") +
+      node.value
+        .map((childNode) => indent(stringify(childNode, depth + 1), depth))
+        .join("\n") +
       `\n${indent("]", depth - 1)}`
     );
   }
@@ -83,9 +89,7 @@ function astToBru(ast) {
       return "{\n" + content + `\n${indent("}", depth - 1)}`;
     };
     return wrap(
-      node.value
-        .map((childNode) => stringify(childNode, depth))
-        .join("\n")
+      node.value.map((childNode) => stringify(childNode, depth)).join("\n")
     );
   }
 
@@ -94,7 +98,7 @@ function astToBru(ast) {
       "'''\n" +
       node.value
         .map((childNode) => {
-          return "  ".repeat(depth) + childNode;
+          return indent(childNode, depth, false);
         })
         .join("\n") +
       `\n${indent("'''", depth - 1)}
