@@ -1,9 +1,9 @@
-const parse = require('../../../src/parse')
+const stringify = require('../../../src/stringify')
 
-describe('bru parse()', () => {
+describe('bru stringify()', () => {
   it('should parse a simple dictionary with one key and value', () => {
-    const input = `name: Bruno`;
-    const expected = {
+    const expected = `name: Bruno`;
+    const input = {
       type: 'multimap',
       value: [{
         type: 'pair',
@@ -12,17 +12,15 @@ describe('bru parse()', () => {
       }]
     }
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
   it('should parse a simple dictionary with multiple keys and values', () => {
-    const input = `
-name: Bruno
-age: 28
-`;
+    const expected = `name: Bruno
+age: 28`;
 
-    const expected = {
+    const input = {
       type: 'multimap',
       value: [{
         type: 'pair',
@@ -35,19 +33,17 @@ age: 28
       }]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
   it('should parse a dictionary 1 level deep', () => {
-    const input = `
-person: {
+    const expected = `person: {
   name: Antony
 }
-created: 2018-01-01
-`;
+created: 2018-01-01`;
 
-    const expected = {
+    const input = {
       type: 'multimap',
       value: [{
         type: 'pair',
@@ -67,22 +63,20 @@ created: 2018-01-01
       }]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
   it('should parse a dictionary 2 levels deep', () => {
-    const input = `
-person: {
+    const expected = `person: {
   name: Antony
   address: {
     city: London
   }
 }
-created: 2018-01-01
-`;
+created: 2018-01-01`;
 
-    const expected = {
+    const input = {
       type: 'multimap',
       value: [{
         type: 'pair',
@@ -113,13 +107,12 @@ created: 2018-01-01
       }]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
   it('should parse a dictionary 3 levels deep', () => {
-    const input = `
-person: {
+    const expected = `person: {
   name: Antony
   address: {
     city: London
@@ -128,14 +121,13 @@ person: {
   links: {
     twitter: {
       url: twitter.com/antony
-      username: '@antony'
+      username: @antony
     }
   }
 }
-created: 2018-01-01
-`;
+created: 2018-01-01`;
 
-    const expected = {
+    const input = {
       type: 'multimap',
       value: [{
         type: 'pair',
@@ -192,7 +184,7 @@ created: 2018-01-01
       }]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 });

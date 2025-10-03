@@ -55,8 +55,8 @@ function astToBru(ast) {
     }
     return (
       `[\n` +
-      node.value.map((d) => indent(stringify(d, depth), depth)).join("\n") +
-      `\n${indent("]", depth)}`
+      node.value.map((d) => indent(stringify(d, depth + 1), depth)).join("\n") +
+      `\n${indent("]", depth - 1)}`
     );
   }
 
@@ -84,7 +84,7 @@ function astToBru(ast) {
       "'''\n" +
       node.value
         .map((d) => {
-          return indent(d, depth);
+          return "  ".repeat(depth) + d;
         })
         .join("\n") +
       `\n${indent("'''", depth - 1)}

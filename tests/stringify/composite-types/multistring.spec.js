@@ -1,13 +1,11 @@
-const parse = require('../../../src/parse')
+const stringify = require('../../../src/stringify')
 
 describe('bru parse()', () => {
-  it('should parse a simple multistring', () => {
-    const input = `
-script.pre-request: '''
+  it('should stringify a simple multistring', () => {
+    const expected = `script.pre-request: '''
   line 1
-'''
-`
-    const expected = {
+'''`
+    const input = {
       type: 'multimap',
       value: [
         {
@@ -21,18 +19,16 @@ script.pre-request: '''
       ]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
-  it('should parse a simple multistring with 2 lines', () => {
-    const input = `
-script.pre-request: '''
+  it('should stringify a simple multistring with 2 lines', () => {
+    const expected = `script.pre-request: '''
   line 1
   line 2
-'''
-`
-    const expected = {
+'''`
+    const input = {
       type: 'multimap',
       value: [
         {
@@ -46,13 +42,12 @@ script.pre-request: '''
       ]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
-  it('should correctly parse indentation', () => {
-    const input = `
-http: {
+  it('should correctly stringify indentation', () => {
+    const expected = `http: {
   method: POST
   url: https://usebruno.com/echo
   headers: {
@@ -64,7 +59,7 @@ http: {
     }
   '''
 }`;
-    const expected = {
+    const input = {
       type: 'multimap',
       value: [
         {
@@ -115,7 +110,7 @@ http: {
       ]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 });

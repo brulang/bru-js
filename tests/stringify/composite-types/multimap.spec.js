@@ -1,12 +1,10 @@
-const parse = require('../../../src/parse')
+const stringify = require('../../../src/stringify')
 
-describe('bru parse()', () => {
+describe('bru stringify()', () => {
   it('should parse a simple multimap', () => {
-    const input = `
-name: Bruno
-name: Anoop
-`
-    const expected = {
+    const expected = `name: Bruno
+name: Anoop`
+    const input = {
       type: 'multimap',
       value: [
         {
@@ -22,20 +20,18 @@ name: Anoop
       ]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
   it('should parse a simple multimap inside a nested multimap', () => {
-    const input = `
-name: Bruno
+    const expected = `name: Bruno
 name: Anoop
 address: {
   city: 'New York'
   city: 'San Francisco'
-}
-`
-    const expected = {
+}`
+    const input = {
       type: 'multimap',
       value: [
         {
@@ -70,7 +66,7 @@ address: {
       ]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 });

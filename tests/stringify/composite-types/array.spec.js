@@ -1,15 +1,13 @@
-const parse = require('../../../src/parse')
+const stringify = require('../../../src/stringify')
 
-describe('bru parse()', () => {
-  it('should parse a simple array', () => {
-    const input = `
-fruits: [
+describe('bru stringify()', () => {
+  it('should stringify a simple array', () => {
+    const expected = `fruits: [
   apple
   banana
   orange
-]
-`;
-    const expected = {
+]`;
+    const input = {
       type: 'multimap',
       value: [{
         type: 'pair',
@@ -25,13 +23,12 @@ fruits: [
       }]
     }
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 
-  it('should parse array with multiple types', () => {
-    const input = `
-fruits: [
+  it('should stringify array with multiple types', () => {
+    const expected = `fruits: [
   {
     name: apple
     color: red
@@ -43,10 +40,9 @@ fruits: [
   [
     orange
   ]
-]
-`;
+]`;
 
-    const expected = {
+    const input = {
       type: 'multimap',
       value: [{
         type: 'pair',
@@ -85,7 +81,7 @@ fruits: [
       }]
     };
 
-    const actual = parse(input);
+    const actual = stringify(input);
     expect(actual).toEqual(expected);
   });
 });
