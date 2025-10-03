@@ -46,7 +46,19 @@ function astToBru(ast) {
     if (node.type !== "pair") {
       return "";
     }
-    return indent(`${node.key}: ` + stringify(node.value, depth), depth);
+    const lines = [];
+    if ("annotations" in node && Array.isArray(node.annotations)) {
+      for (let an of node.annotations) {
+        let annotationLine = `@${an.name}`;
+        if (an.args.length) {
+          annotationLine += `(${an.args.join(",")})`;
+        }
+        lines.push(indent(annotationLine, depth));
+      }
+    }
+    return lines
+      .concat(indent(`${node.key}: ` + stringify(node.value, depth + 1), depth))
+      .join("\n");
   }
 
   function stringifyArray(node, depth = 0) {
@@ -55,7 +67,7 @@ function astToBru(ast) {
     }
     return (
       `[\n` +
-      node.value.map((d) => indent(stringify(d, depth + 1), depth)).join("\n") +
+      node.value.map((childNode) => indent(stringify(childNode, depth + 1), depth)).join("\n") +
       `\n${indent("]", depth - 1)}`
     );
   }
@@ -72,9 +84,7 @@ function astToBru(ast) {
     };
     return wrap(
       node.value
-        .map((d) => {
-          return indent(stringify(d, depth + 1), depth);
-        })
+        .map((childNode) => stringify(childNode, depth))
         .join("\n")
     );
   }
@@ -83,8 +93,8 @@ function astToBru(ast) {
     return (
       "'''\n" +
       node.value
-        .map((d) => {
-          return "  ".repeat(depth) + d;
+        .map((childNode) => {
+          return "  ".repeat(depth) + childNode;
         })
         .join("\n") +
       `\n${indent("'''", depth - 1)}
