@@ -2,7 +2,9 @@
   "name": "bru-js",
   "version": "0.1.0",
   "license": "MIT",
+  "type":"commonjs",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "files": [
     "src",
     "package.json",
